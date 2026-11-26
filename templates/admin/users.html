@@ -1,0 +1,69 @@
+{% extends "admin/base_admin.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Foydalanuvchilar{% endblock %}
+{% block heading %}Foydalanuvchilar{% endblock %}
+{% block content %}
+<div class="toolbar">
+  <input class="input search" id="user-search" type="search" placeholder="Qidirish: ism, familiya, telefon…">
+  <button class="btn btn-primary" type="button" id="user-add">{{ icon('plus') }} Foydalanuvchi qo'shish</button>
+</div>
+<section class="card">
+  {% if users %}
+  <div class="table-wrap"><table class="table" id="user-table">
+    <thead><tr><th>Foydalanuvchi</th><th>Telefon</th><th>Navbatchilik</th><th>Keyingi sana</th><th>Bildirishnoma</th><th>Kirish</th><th></th></tr></thead>
+    <tbody>
+    {% for u in users %}
+    <tr data-id="{{ u.id }}" data-first="{{ u.first_name }}" data-last="{{ u.last_name }}" data-phone="{{ u.phone }}" data-note="{{ u.note }}" data-active="{{ u.active }}"
+        data-search="{{ (u.first_name ~ ' ' ~ u.last_name ~ ' ' ~ u.phone ~ ' ' ~ u.note)|lower }}">
+      <td><b>{{ u.first_name }} {{ u.last_name }}</b>{% if u.note %}<small class="block muted">{{ u.note }}</small>{% endif %}
+        {% if not u.active %}<span class="badge badge-danger">Faol emas</span>{% endif %}</td>
+      <td>{{ u.phone or '—' }}</td>
+      <td>{{ u.duty_total }}</td>
+      <td>{{ u.next_duty|fmt_date if u.next_duty else '—' }}</td>
+      <td>{% if u.push_count %}<span class="badge badge-accent">Yoqilgan ({{ u.push_count }})</span>{% else %}<span class="badge">Yo'q</span>{% endif %}</td>
+      <td>{% if u.qr_label %}<span class="badge badge-accent" title="QR orqali ro'yxatdan o'tgan">QR: {{ u.qr_label }}</span>{% else %}<span class="badge">Admin qo'shgan</span>{% endif %}
+        {% if u.last_login %}<small class="block muted">Oxirgi: {{ u.last_login|fmt_dt }}</small>{% endif %}</td>
+      <td class="actions">
+        <button class="icon-btn" type="button" data-act="link" title="Shaxsiy havola yaratish">{{ icon('link') }}</button>
+        <button class="icon-btn" type="button" data-act="edit" title="Tahrirlash">{{ icon('edit') }}</button>
+        <button class="icon-btn danger" type="button" data-act="delete" title="O'chirish">{{ icon('trash') }}</button>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody></table></div>
+  {% else %}<p class="muted empty">Hali foydalanuvchi yo'q.</p>{% endif %}
+</section>
+{% endblock %}
+
+{% block modals %}
+<div class="modal" id="user-modal" hidden>
+  <div class="modal-backdrop" data-modal-close></div>
+  <div class="modal-box card" role="dialog" aria-modal="true">
+    <div class="card-head"><h2 id="user-modal-title">Foydalanuvchi</h2><button class="icon-btn" type="button" data-modal-close>{{ icon('x') }}</button></div>
+    <form class="form" id="user-form">
+      <input type="hidden" name="id">
+      <div class="form-row">
+        <label class="field"><span>Ism *</span><input class="input" name="first_name" required minlength="2" maxlength="50"></label>
+        <label class="field"><span>Familiya *</span><input class="input" name="last_name" required minlength="2" maxlength="50"></label>
+      </div>
+      <div class="form-row">
+        <label class="field"><span>Telefon</span><input class="input" name="phone" type="tel" maxlength="20"></label>
+        <label class="field"><span>Qo'shimcha ma'lumot</span><input class="input" name="note" maxlength="100"></label>
+      </div>
+      <label class="check" id="active-wrap"><input type="checkbox" name="active" checked> Faol foydalanuvchi</label>
+      <div class="modal-actions"><button class="btn btn-primary" type="submit">Saqlash</button><button class="btn btn-ghost" type="button" data-modal-close>Bekor qilish</button></div>
+    </form>
+  </div>
+</div>
+
+<div class="modal" id="link-modal" hidden>
+  <div class="modal-backdrop" data-modal-close></div>
+  <div class="modal-box card" role="dialog" aria-modal="true">
+    <div class="card-head"><h2>Shaxsiy kirish havolasi</h2><button class="icon-btn" type="button" data-modal-close>{{ icon('x') }}</button></div>
+    <p class="muted">Bu havolani foydalanuvchiga yuboring. U havolani ochganda tizimga avtomatik kiradi. <b>Havola faqat hozir ko'rsatiladi</b> — saqlab qo'ying. Yangisini yaratsangiz, eskisi ishlamaydi.</p>
+    <div class="link-box"><input class="input" id="link-value" readonly><button class="btn btn-primary btn-sm" type="button" id="link-copy">{{ icon('copy') }} Nusxalash</button></div>
+    <div class="modal-actions"><button class="btn btn-ghost" type="button" data-modal-close>Yopish</button></div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/admin_users.js') }}?v={{ asset_v }}"></script>{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "admin/base_admin.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Statistika{% endblock %}
+{% block heading %}Statistika{% endblock %}
+{% block content %}
+<div class="toolbar">
+  <div class="year-switch">
+    <a class="btn btn-ghost btn-sm" href="{{ url_for('admin_stats', year=year - 1) }}">← {{ year - 1 }}</a>
+    <b class="year">{{ year }}</b>
+    <a class="btn btn-ghost btn-sm" href="{{ url_for('admin_stats', year=year + 1) }}">{{ year + 1 }} →</a>
+  </div>
+  <span class="pill">Jami: {{ total }} ta navbatchilik</span>
+</div>
+
+<div class="grid-2">
+  <section class="card">
+    <div class="card-head"><h2>Oylar bo'yicha</h2></div>
+    <div class="vbars">
+      {% for c in months %}
+      <div class="vbar"><b>{{ c }}</b><div class="vbar-track"><div class="vbar-fill" style="height: {{ (c / max_month * 100)|round|int }}%"></div></div><small>{{ month_names[loop.index0][:3] }}</small></div>
+      {% endfor %}
+    </div>
+  </section>
+  <section class="card">
+    <div class="card-head"><h2>Hafta kunlari bo'yicha</h2></div>
+    <div class="vbars">
+      {% for c in weekdays %}
+      <div class="vbar"><b>{{ c }}</b><div class="vbar-track"><div class="vbar-fill alt" style="height: {{ (c / max_weekday * 100)|round|int }}%"></div></div><small>{{ weekday_names[loop.index0][:2] }}</small></div>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+
+<section class="card">
+  <div class="card-head"><h2>Foydalanuvchilar bo'yicha ({{ year }})</h2></div>
+  {% if per_user %}
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>Foydalanuvchi</th><th>Jami</th><th></th><th>O'tgan</th><th>Kelgusi</th><th>Keyingi sana</th></tr></thead>
+    <tbody>
+    {% for r in per_user %}
+      <tr><td><b>{{ r.first_name }} {{ r.last_name }}</b></td><td>{{ r.total }}</td>
+      <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width: {{ (r.total / max_user * 100)|round|int }}%"></div></div></td>
+      <td>{{ r.past }}</td><td>{{ r.upcoming }}</td><td>{{ r.next_duty|fmt_date if r.next_duty else '—' }}</td></tr>
+    {% endfor %}
+    </tbody></table></div>
+  {% else %}<p class="muted empty">Ma'lumot yo'q.</p>{% endif %}
+</section>
+{% endblock %}

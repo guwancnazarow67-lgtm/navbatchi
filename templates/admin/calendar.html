@@ -1,0 +1,57 @@
+{% extends "admin/base_admin.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Kalendar{% endblock %}
+{% block heading %}Navbatchilik kalendari{% endblock %}
+{% block content %}
+<script type="application/json" id="page-data">{{ {'users': users, 'today': today.isoformat()}|tojson }}</script>
+<section class="card">
+  <p class="muted small">Sanani bosing: shu kundagi navbatchilarni ko'ring, yangisini biriktiring, boshqa kunga ko'chiring yoki o'chiring.</p>
+  <div id="calendar" data-today="{{ today.isoformat() }}" data-url="{{ url_for('api_duties_list') }}" data-mode="admin"></div>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>{{ icon('plus') }} Bir nechta kunga biriktirish</h2></div>
+  <form class="form" id="bulk-form">
+    <div class="form-row">
+      <label class="field"><span>Foydalanuvchi</span>
+        <select class="input" name="user_id" required>
+          <option value="">Tanlang…</option>
+          {% for u in users %}<option value="{{ u.id }}">{{ u.name }}</option>{% endfor %}
+        </select></label>
+      <label class="field"><span>Izoh (ixtiyoriy)</span><input class="input" name="note" maxlength="100"></label>
+    </div>
+    <div class="form-row three">
+      <label class="field"><span>Boshlanish sanasi</span><input class="input" type="date" name="from" required></label>
+      <label class="field"><span>Tugash sanasi</span><input class="input" type="date" name="to" required></label>
+      <label class="field"><span>Har necha kunda</span><input class="input" type="number" name="step" min="1" max="60" value="1" required></label>
+    </div>
+    <button class="btn btn-primary" type="submit">Biriktirish</button>
+  </form>
+</section>
+{% endblock %}
+
+{% block modals %}
+<div class="modal" id="day-modal" hidden>
+  <div class="modal-backdrop" data-modal-close></div>
+  <div class="modal-box card" role="dialog" aria-modal="true">
+    <div class="card-head"><h2 id="day-title">Sana</h2><button class="icon-btn" type="button" data-modal-close>{{ icon('x') }}</button></div>
+    <ul class="list" id="day-list"></ul>
+    <p class="muted empty" id="day-empty" hidden>Bu kunga hali navbatchi biriktirilmagan.</p>
+    <form class="form add-duty" id="day-form">
+      <h3>Navbatchi biriktirish</h3>
+      <div class="form-row">
+        <select class="input" name="user_id" required>
+          <option value="">Foydalanuvchini tanlang…</option>
+          {% for u in users %}<option value="{{ u.id }}">{{ u.name }}</option>{% endfor %}
+        </select>
+        <input class="input" name="note" maxlength="100" placeholder="Izoh (ixtiyoriy)">
+      </div>
+      <button class="btn btn-primary" type="submit">{{ icon('plus') }} Biriktirish</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/calendar.js') }}?v={{ asset_v }}"></script>
+<script src="{{ url_for('static', filename='js/admin_calendar.js') }}?v={{ asset_v }}"></script>
+{% endblock %}

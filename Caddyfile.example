@@ -1,0 +1,6 @@
+# HTTPS uchun eng oddiy yo'l: Caddy avtomatik sertifikat oladi.
+# "navbatchi.example.uz" o'rniga o'z domeningizni yozing.
+navbatchi.example.uz {
+    encode gzip
+    reverse_proxy 127.0.0.1:8000
+}

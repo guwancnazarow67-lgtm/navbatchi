@@ -1,0 +1,58 @@
+{% extends "admin/base_admin.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Boshqaruv{% endblock %}
+{% block heading %}Boshqaruv paneli{% endblock %}
+{% block content %}
+<div class="stat-grid">
+  <div class="stat card"><span class="stat-ic c1">{{ icon('users') }}</span><div><b>{{ stats.users }}</b><small>Foydalanuvchilar</small></div></div>
+  <div class="stat card"><span class="stat-ic c2">{{ icon('calendar') }}</span><div><b>{{ stats.month_duties }}</b><small>Shu oydagi navbatchiliklar</small></div></div>
+  <div class="stat card"><span class="stat-ic c3">{{ icon('bell') }}</span><div><b>{{ stats.push_users }}</b><small>Bildirishnoma yoqqanlar</small></div></div>
+  <div class="stat card"><span class="stat-ic c4">{{ icon('qr') }}</span><div><b>{{ stats.qr_users }}</b><small>QR orqali kirganlar</small></div></div>
+</div>
+
+<div class="grid-2">
+  <section class="card">
+    <div class="card-head"><h2>Keyingi 7 kun</h2><a class="link-small" href="{{ url_for('admin_calendar') }}">Kalendar →</a></div>
+    <ul class="list">
+      {% for u in upcoming %}
+      <li>
+        <div><b>{{ u.day|fmt_date }}</b><small>{{ u.day|weekday }}</small></div>
+        <div class="chips">
+          {% if u.names %}{% for n in u.names %}<span class="chip">{{ n }}</span>{% endfor %}
+          {% else %}<span class="muted small">—</span>{% endif %}
+        </div>
+        <span class="pill {% if loop.first %}pill-accent{% endif %}">{{ u.when }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="card">
+    <div class="card-head"><h2>{{ month_label|capitalize }}: navbatchilik soni</h2><a class="link-small" href="{{ url_for('admin_stats') }}">Statistika →</a></div>
+    {% if per_user %}
+    <div class="bars">
+      {% for r in per_user %}
+      <div class="bar-row"><span class="bar-name">{{ r.first_name }} {{ r.last_name }}</span>
+        <div class="bar-track"><div class="bar-fill" style="width: {{ (r.c / max_count * 100)|round|int }}%"></div></div>
+        <b>{{ r.c }}</b></div>
+      {% endfor %}
+    </div>
+    {% else %}<p class="muted empty">Bu oyda navbatchilik biriktirilmagan.</p>{% endif %}
+  </section>
+</div>
+
+<section class="card">
+  <div class="card-head"><h2>So'nggi foydalanuvchilar</h2><a class="link-small" href="{{ url_for('admin_users') }}">Hammasi →</a></div>
+  {% if recent_users %}
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>Ism</th><th>Telefon</th><th>Kirish usuli</th><th>Qo'shilgan</th></tr></thead>
+    <tbody>
+    {% for u in recent_users %}
+      <tr><td>{{ u.first_name }} {{ u.last_name }}</td><td>{{ u.phone or '—' }}</td>
+      <td>{% if u.qr_label %}<span class="badge badge-accent">QR: {{ u.qr_label }}</span>{% else %}<span class="badge">Administrator</span>{% endif %}</td>
+      <td>{{ u.created_at|fmt_dt }}</td></tr>
+    {% endfor %}
+    </tbody></table></div>
+  {% else %}<p class="muted empty">Hali foydalanuvchi yo'q. «Foydalanuvchilar» yoki «QR-kod» bo'limidan boshlang.</p>{% endif %}
+</section>
+{% endblock %}

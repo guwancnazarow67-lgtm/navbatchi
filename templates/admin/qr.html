@@ -1,0 +1,60 @@
+{% extends "admin/base_admin.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}QR-kod{% endblock %}
+{% block heading %}QR-kod orqali ro'yxatga olish{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="card-head"><h2>{{ icon('qr') }} Yangi QR-kod yaratish</h2></div>
+  <p class="muted">QR-kod foydalanuvchini <b>faqat ro'yxatdan o'tish</b> sahifasiga olib boradi. U administrator paneliga hech qachon kirish huquqini bermaydi.</p>
+  <form class="form" id="qr-form">
+    <div class="form-row">
+      <label class="field"><span>Nomi (masalan: «Xonadagi plakat»)</span><input class="input" name="label" maxlength="60" placeholder="Asosiy QR-kod"></label>
+      <label class="field"><span>Amal qilish muddati (kun, 0 — cheksiz)</span><input class="input" type="number" name="valid_days" min="0" max="3650" value="0"></label>
+    </div>
+    <button class="btn btn-primary" type="submit">{{ icon('plus') }} QR-kod yaratish</button>
+  </form>
+  {% if request.host.startswith(('localhost', '127.0.0.1')) %}
+  <div class="alert alert-warn">Siz hozir <b>localhost</b> orqali ochgansiz. Telefon bunday QR-kodni ocha olmaydi. Sozlamalarda <code>BASE_URL</code> ni kompyuteringiz tarmoq manzili (masalan <code>http://192.168.1.10:5000</code>) yoki domeningizga o'zgartiring.</div>
+  {% endif %}
+</section>
+
+<div class="qr-grid">
+  {% for q in items %}
+  <section class="card qr-card {% if not q.active or q.expired %}is-off{% endif %}" data-id="{{ q.id }}">
+    <img class="qr-img" src="{{ url_for('admin_qr_png', qid=q.id) }}" alt="QR-kod: {{ q.label }}" width="220" height="220" loading="lazy">
+    <h3>{{ q.label }}</h3>
+    <p class="muted small">
+      {% if q.expired %}<span class="badge badge-danger">Muddati tugagan</span>
+      {% elif q.active %}<span class="badge badge-accent">Faol</span>{% else %}<span class="badge badge-danger">O'chirilgan</span>{% endif %}
+      · {{ q.joined }} ta foydalanuvchi
+    </p>
+    <p class="small">{% if q.expires_at %}Amal qiladi: {{ q.expires_at|fmt_dt }} gacha{% else %}Muddati cheksiz{% endif %}</p>
+    <input class="input small-input" readonly value="{{ q.link }}">
+    <div class="btn-row">
+      <button class="btn btn-ghost btn-sm" type="button" data-act="copy" data-link="{{ q.link }}">{{ icon('copy') }} Havola</button>
+      <a class="btn btn-ghost btn-sm" href="{{ url_for('admin_qr_png', qid=q.id) }}?download=1">{{ icon('download') }} PNG</a>
+      <button class="btn btn-ghost btn-sm" type="button" data-act="toggle" data-active="{{ q.active }}">{{ 'O\'chirish' if q.active else 'Yoqish' }}</button>
+      <button class="icon-btn danger" type="button" data-act="delete" title="O'chirish">{{ icon('trash') }}</button>
+    </div>
+  </section>
+  {% else %}
+  <p class="muted empty">Hali QR-kod yaratilmagan.</p>
+  {% endfor %}
+</div>
+
+<section class="card">
+  <div class="card-head"><h2>Kim QR-kod orqali kirdi</h2></div>
+  {% if scans %}
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>Foydalanuvchi</th><th>QR-kod</th><th>Harakat</th><th>Vaqt</th></tr></thead>
+    <tbody>
+    {% for s in scans %}
+      <tr><td>{% if s.first_name %}{{ s.first_name }} {{ s.last_name }}{% else %}—{% endif %}</td><td>{{ s.label }}</td>
+      <td>{% if s.kind == 'register' %}<span class="badge badge-accent">Ro'yxatdan o'tdi</span>{% else %}<span class="badge">Qayta kirdi</span>{% endif %}</td>
+      <td>{{ s.created_at|fmt_dt }}</td></tr>
+    {% endfor %}
+    </tbody></table></div>
+  {% else %}<p class="muted empty">Hali hech kim QR-kod orqali kirmagan.</p>{% endif %}
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/admin_qr.js') }}?v={{ asset_v }}"></script>{% endblock %}

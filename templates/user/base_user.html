@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block body_class %}user-app{% endblock %}
+{% block body %}
+<header class="topbar">
+  <a class="logo" href="{{ url_for('user_dashboard') }}"><span class="logo-mark">{{ icon('calendar') }}</span><span>NAVBATCHI</span></a>
+  <div class="topbar-actions">
+    <button class="icon-btn" type="button" data-theme-toggle title="Rejimni almashtirish">{{ icon('moon') }}</button>
+  </div>
+</header>
+<main class="container page fade-in">
+  {% block content %}{% endblock %}
+</main>
+<nav class="bottom-nav" aria-label="Asosiy menyu">
+  <a href="{{ url_for('user_dashboard') }}" class="{% if request.endpoint == 'user_dashboard' %}active{% endif %}">{{ icon('home') }}<span>Bosh sahifa</span></a>
+  <a href="{{ url_for('user_notifications') }}" class="{% if request.endpoint == 'user_notifications' %}active{% endif %}">
+    <span class="nav-ic">{{ icon('bell') }}{% if unread_count %}<i class="dot-badge">{{ unread_count if unread_count < 10 else '9+' }}</i>{% endif %}</span><span>Xabarlar</span></a>
+  <a href="{{ url_for('user_profile') }}" class="{% if request.endpoint == 'user_profile' %}active{% endif %}">{{ icon('user') }}<span>Profil</span></a>
+</nav>
+{% endblock %}

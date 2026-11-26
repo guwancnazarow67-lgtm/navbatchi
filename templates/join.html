@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Ro'yxatdan o'tish{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+{% block body %}
+<main class="auth-card card fade-in">
+  <div class="brand-mark">{{ icon('user') }}</div>
+  <h1>Ro'yxatdan o'tish</h1>
+  <p class="muted">NAVBATCHI tizimiga xush kelibsiz! Ma'lumotlaringizni kiriting, shundan so'ng tizim sizni keyingi safar avtomatik taniydi.</p>
+  {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+  <form method="post" class="form" autocomplete="on">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="field"><span>Ism *</span>
+      <input class="input" name="first_name" required minlength="2" maxlength="50" value="{{ values.first_name }}" autocomplete="given-name" autofocus></label>
+    <label class="field"><span>Familiya *</span>
+      <input class="input" name="last_name" required minlength="2" maxlength="50" value="{{ values.last_name }}" autocomplete="family-name"></label>
+    <label class="field"><span>Telefon raqami</span>
+      <input class="input" name="phone" type="tel" maxlength="20" placeholder="+998 90 123 45 67" value="{{ values.phone }}" autocomplete="tel"></label>
+    <label class="field"><span>Qo'shimcha ma'lumot (guruh, bo'lim yoki lavozim)</span>
+      <input class="input" name="note" maxlength="100" value="{{ values.note }}"></label>
+    <button class="btn btn-primary btn-block" type="submit">Ro'yxatdan o'tish</button>
+  </form>
+  <p class="hint">Avval ro'yxatdan o'tgan bo'lsangiz, <a href="{{ url_for('user_login') }}">shaxsiy havola bilan kiring</a>.</p>
+</main>
+{% endblock %}

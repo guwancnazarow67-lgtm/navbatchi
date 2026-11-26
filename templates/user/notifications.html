@@ -1,0 +1,28 @@
+{% extends "user/base_user.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Xabarlar{% endblock %}
+{% block content %}
+<div class="page-head">
+  <h1>Bildirishnomalar</h1>
+  {% if items and unread_count %}<button class="btn btn-ghost btn-sm" type="button" id="mark-read">{{ icon('check') }} Hammasini o'qilgan qilish</button>{% endif %}
+</div>
+<section class="card">
+  {% if items %}
+  <ul class="list notif-list">
+    {% for n in items %}
+    <li class="{% if not n.read_at %}unread{% endif %}">
+      <div>
+        <b>{{ n.title }}</b>
+        <p>{{ n.body }}</p>
+        <small>{{ n.created_at|fmt_dt }}</small>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="muted empty">Hozircha bildirishnomalar yo'q.</p>{% endif %}
+</section>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/push.js') }}?v={{ asset_v }}"></script>
+<script src="{{ url_for('static', filename='js/user.js') }}?v={{ asset_v }}"></script>
+{% endblock %}

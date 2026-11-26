@@ -1,0 +1,17 @@
+{% extends "admin/base_admin.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Hisob{% endblock %}
+{% block heading %}Administrator hisobi{% endblock %}
+{% block content %}
+<section class="card narrow">
+  <div class="card-head"><h2>{{ icon('shield') }} Parolni almashtirish</h2></div>
+  <p class="muted">Administrator: <b>{{ admin.username }}</b></p>
+  <form class="form" id="password-form" autocomplete="off">
+    <label class="field"><span>Joriy parol</span><input class="input" type="password" name="current" required autocomplete="current-password"></label>
+    <label class="field"><span>Yangi parol (kamida 8 ta belgi)</span><input class="input" type="password" name="new" required minlength="8" autocomplete="new-password"></label>
+    <label class="field"><span>Yangi parolni takrorlang</span><input class="input" type="password" name="again" required minlength="8" autocomplete="new-password"></label>
+    <button class="btn btn-primary" type="submit">Parolni saqlash</button>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/admin_account.js') }}?v={{ asset_v }}"></script>{% endblock %}

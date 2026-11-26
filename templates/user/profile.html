@@ -1,0 +1,58 @@
+{% extends "user/base_user.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Profil{% endblock %}
+{% block content %}
+<div class="page-head"><h1>Profil</h1></div>
+
+<section class="card">
+  <div class="card-head"><h2>{{ icon('user') }} Mening ma'lumotlarim</h2></div>
+  <form class="form" id="profile-form">
+    <div class="form-row">
+      <label class="field"><span>Ism</span><input class="input" name="first_name" required minlength="2" maxlength="50" value="{{ me.first_name }}"></label>
+      <label class="field"><span>Familiya</span><input class="input" name="last_name" required minlength="2" maxlength="50" value="{{ me.last_name }}"></label>
+    </div>
+    <div class="form-row">
+      <label class="field"><span>Telefon</span><input class="input" name="phone" type="tel" maxlength="20" value="{{ me.phone }}"></label>
+      <label class="field"><span>Qo'shimcha ma'lumot</span><input class="input" name="note" maxlength="100" value="{{ me.note }}"></label>
+    </div>
+    <button class="btn btn-primary" type="submit">Saqlash</button>
+  </form>
+</section>
+
+<section class="card" id="push-settings" data-count="{{ push_count }}">
+  <div class="card-head"><h2>{{ icon('bell') }} Bildirishnoma sozlamalari</h2></div>
+  <p class="muted" id="push-status">Tekshirilmoqda…</p>
+  <div class="btn-row">
+    <button class="btn btn-primary" type="button" id="push-enable" hidden>Bildirishnomalarni yoqish</button>
+    <button class="btn btn-ghost" type="button" id="push-disable" hidden>O'chirish</button>
+    <button class="btn btn-ghost" type="button" id="push-test" hidden>{{ icon('send') }} Sinov xabari</button>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>{{ icon('link') }} Boshqa qurilmadan kirish</h2></div>
+  <p class="muted">Yangi telefon yoki brauzerda kirish uchun shaxsiy havola yarating. Havola faqat bir marta ko'rsatiladi; yangisini yaratsangiz eskisi ishlamay qoladi.</p>
+  <button class="btn btn-ghost" type="button" id="make-link">Yangi shaxsiy havola yaratish</button>
+  <div class="link-box" id="link-box" hidden>
+    <input class="input" id="link-value" readonly>
+    <button class="btn btn-primary btn-sm" type="button" id="link-copy">{{ icon('copy') }} Nusxalash</button>
+  </div>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>Ko'rinish</h2></div>
+  <div class="btn-row">
+    <button class="btn btn-ghost" type="button" data-theme-set="light">{{ icon('sun') }} Yorug'</button>
+    <button class="btn btn-ghost" type="button" data-theme-set="dark">{{ icon('moon') }} Qorong'i</button>
+  </div>
+</section>
+
+<form method="post" action="{{ url_for('logout') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <button class="btn btn-danger btn-block" type="submit">{{ icon('logout') }} Chiqish</button>
+</form>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/push.js') }}?v={{ asset_v }}"></script>
+<script src="{{ url_for('static', filename='js/user.js') }}?v={{ asset_v }}"></script>
+{% endblock %}

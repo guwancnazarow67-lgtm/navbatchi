@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Administrator{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+{% block body %}
+<main class="auth-card card fade-in">
+  <div class="brand-mark">{{ icon('shield') }}</div>
+  <h1>Administrator paneli</h1>
+  <p class="muted">Login va parolingiz bilan kiring.</p>
+  {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+  <form method="post" class="form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="field"><span>Login</span><input class="input" name="username" required autocomplete="username" autofocus></label>
+    <label class="field"><span>Parol</span><input class="input" type="password" name="password" required autocomplete="current-password"></label>
+    <button class="btn btn-primary btn-block" type="submit">Kirish</button>
+  </form>
+  <a class="link-small" href="{{ url_for('user_login') }}">← Foydalanuvchi kirishi</a>
+  <button class="btn btn-ghost btn-sm theme-corner" type="button" data-theme-toggle title="Rejimni almashtirish">{{ icon('moon') }}</button>
+</main>
+{% endblock %}

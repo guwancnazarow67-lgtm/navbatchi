@@ -1,0 +1,13 @@
+services:
+  web:
+    build: .
+    container_name: navbatchi
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATA_DIR: /app/data
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "127.0.0.1:8000:8000"

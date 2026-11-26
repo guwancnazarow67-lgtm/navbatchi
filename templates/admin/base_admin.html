@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block body_class %}admin-app{% endblock %}
+{% block body %}
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <a class="logo" href="{{ url_for('admin_dashboard') }}"><span class="logo-mark">{{ icon('calendar') }}</span><span>NAVBATCHI</span></a>
+    <nav>
+      <a href="{{ url_for('admin_dashboard') }}" class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}">{{ icon('home') }} Boshqaruv</a>
+      <a href="{{ url_for('admin_users') }}" class="{% if request.endpoint == 'admin_users' %}active{% endif %}">{{ icon('users') }} Foydalanuvchilar</a>
+      <a href="{{ url_for('admin_calendar') }}" class="{% if request.endpoint == 'admin_calendar' %}active{% endif %}">{{ icon('calendar') }} Kalendar</a>
+      <a href="{{ url_for('admin_qr') }}" class="{% if request.endpoint == 'admin_qr' %}active{% endif %}">{{ icon('qr') }} QR-kod</a>
+      <a href="{{ url_for('admin_notifications') }}" class="{% if request.endpoint == 'admin_notifications' %}active{% endif %}">{{ icon('bell') }} Bildirishnomalar</a>
+      <a href="{{ url_for('admin_stats') }}" class="{% if request.endpoint == 'admin_stats' %}active{% endif %}">{{ icon('chart') }} Statistika</a>
+      <a href="{{ url_for('admin_account') }}" class="{% if request.endpoint == 'admin_account' %}active{% endif %}">{{ icon('shield') }} Hisob</a>
+    </nav>
+    <form method="post" action="{{ url_for('logout') }}" class="sidebar-foot">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <span class="muted small">{{ admin.username }}</span>
+      <button class="btn btn-ghost btn-sm" type="submit">{{ icon('logout') }} Chiqish</button>
+    </form>
+  </aside>
+  <div class="sidebar-scrim" id="scrim"></div>
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" type="button" data-sidebar-toggle aria-label="Menyu">{{ icon('menu') }}</button>
+      <h1 class="topbar-title">{% block heading %}{% endblock %}</h1>
+      <div class="topbar-actions">
+        <button class="icon-btn" type="button" data-theme-toggle title="Rejimni almashtirish">{{ icon('moon') }}</button>
+      </div>
+    </header>
+    <main class="page fade-in">{% block content %}{% endblock %}</main>
+  </div>
+</div>
+{% block modals %}{% endblock %}
+{% endblock %}

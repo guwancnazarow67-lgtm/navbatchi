@@ -1,0 +1,87 @@
+{% extends "user/base_user.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Bosh sahifa{% endblock %}
+{% block content %}
+<section class="hero card">
+  <div>
+    <p class="eyebrow">Salom,</p>
+    <h1>{{ me.first_name }} {{ me.last_name }}</h1>
+    <p class="muted">{{ today_weekday }}, {{ today_label }}</p>
+  </div>
+  <div class="next-duty {% if on_duty_today %}is-today{% endif %}">
+    {% if next_duty %}
+      <span class="next-label">Keyingi navbatchilik</span>
+      <strong class="next-date">{{ next_duty.label }}</strong>
+      <span class="next-weekday">{{ next_duty.weekday }}</span>
+      <span class="pill {% if on_duty_today %}pill-accent{% endif %}">{{ next_duty.when }}</span>
+    {% else %}
+      <span class="next-label">Keyingi navbatchilik</span>
+      <strong class="next-date">Belgilanmagan</strong>
+      <span class="next-weekday">Administrator sana biriktirganda shu yerda ko'rinadi</span>
+    {% endif %}
+  </div>
+</section>
+
+{% if on_duty_today %}
+<div class="alert alert-accent">{{ icon('check') }} Bugun sizning navbatchilik kuningiz. Omad!</div>
+{% endif %}
+
+<section class="card" id="push-card" hidden data-asked="{{ me.notify_asked }}" data-enabled="{{ me.notify_enabled }}">
+  <div class="card-head"><h2>{{ icon('bell') }} Bildirishnomalar</h2></div>
+  <p class="muted" id="push-card-text"></p>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>{{ icon('calendar') }} Navbatchilik kalendari</h2></div>
+  <div id="calendar" data-today="{{ today.isoformat() }}" data-url="{{ url_for('api_me_duties') }}" data-mode="user"></div>
+  <div class="legend">
+    <span><i class="lg lg-future"></i> Kelgusi navbatchilik</span>
+    <span><i class="lg lg-past"></i> O'tgan navbatchilik</span>
+    <span><i class="lg lg-today"></i> Bugun</span>
+  </div>
+</section>
+
+<div class="grid-2">
+  <section class="card">
+    <div class="card-head"><h2>Kelgusi navbatchiliklar</h2></div>
+    {% if upcoming %}
+    <ul class="list">
+      {% for d in upcoming %}
+      <li><div><b>{{ d.label }}</b><small>{{ d.weekday }}{% if d.note %} · {{ d.note }}{% endif %}</small></div>
+          <span class="pill {% if d.days == 0 %}pill-accent{% endif %}">{{ d.when }}</span></li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="muted empty">Hozircha kelgusi navbatchilik yo'q.</p>{% endif %}
+  </section>
+  <section class="card">
+    <div class="card-head"><h2>O'tgan navbatchiliklar</h2></div>
+    {% if past %}
+    <ul class="list">
+      {% for d in past %}
+      <li><div><b>{{ d.label }}</b><small>{{ d.weekday }}{% if d.note %} · {{ d.note }}{% endif %}</small></div>
+          <span class="pill pill-muted">{{ d.when }}</span></li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="muted empty">O'tgan navbatchilik yo'q.</p>{% endif %}
+  </section>
+</div>
+
+<div class="modal" id="push-modal" hidden>
+  <div class="modal-backdrop"></div>
+  <div class="modal-box card" role="dialog" aria-modal="true" aria-labelledby="push-q">
+    <div class="brand-mark">{{ icon('bell') }}</div>
+    <h2 id="push-q">Navbatchilik haqidagi bildirishnomalarni olishga ruxsat berasizmi?</h2>
+    <p class="muted">Navbatchilikdan bir kun oldin va navbatchilik kuni sizga eslatma yuboramiz.</p>
+    <p class="hint" id="push-ios-hint" hidden>iPhone'da bildirishnoma olish uchun avval saytni «Ulashish → Ekranga qo'shish» orqali o'rnating va ilovani shu yerdan oching.</p>
+    <div class="modal-actions">
+      <button class="btn btn-primary" type="button" id="push-yes">Ha, ruxsat beraman</button>
+      <button class="btn btn-ghost" type="button" id="push-no">Yo'q</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/calendar.js') }}?v={{ asset_v }}"></script>
+<script src="{{ url_for('static', filename='js/push.js') }}?v={{ asset_v }}"></script>
+<script src="{{ url_for('static', filename='js/user.js') }}?v={{ asset_v }}"></script>
+{% endblock %}

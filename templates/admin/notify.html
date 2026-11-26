@@ -1,0 +1,38 @@
+{% extends "admin/base_admin.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Bildirishnomalar{% endblock %}
+{% block heading %}Bildirishnoma yuborish{% endblock %}
+{% block content %}
+<section class="card">
+  <div class="card-head"><h2>{{ icon('send') }} Yangi xabar</h2></div>
+  <form class="form" id="notify-form">
+    <label class="field"><span>Sarlavha</span><input class="input" name="title" required maxlength="80" placeholder="Masalan: Jadval o'zgardi"></label>
+    <label class="field"><span>Xabar matni</span><textarea class="input" name="body" required maxlength="300" rows="3"></textarea></label>
+    <div class="field">
+      <span>Kimga yuboriladi</span>
+      <label class="check"><input type="radio" name="target" value="all" checked> Barcha foydalanuvchilarga</label>
+      <label class="check"><input type="radio" name="target" value="selected"> Tanlanganlarga</label>
+      <div class="pick-list" id="pick-list" hidden>
+        {% for u in users %}
+        <label class="check"><input type="checkbox" name="user" value="{{ u.id }}"> {{ u.first_name }} {{ u.last_name }}
+          {% if u.notify_enabled %}<span class="badge badge-accent">push</span>{% endif %}</label>
+        {% endfor %}
+      </div>
+    </div>
+    <p class="muted small">Xabar foydalanuvchining «Xabarlar» bo'limiga yoziladi. Bildirishnomani yoqqan foydalanuvchilar telefonida push ham oladi.</p>
+    <button class="btn btn-primary" type="submit">{{ icon('send') }} Yuborish</button>
+  </form>
+</section>
+
+<section class="card">
+  <div class="card-head"><h2>Yuborilgan xabarlar</h2></div>
+  {% if history %}
+  <div class="table-wrap"><table class="table">
+    <thead><tr><th>Sarlavha</th><th>Matn</th><th>Qabul qiluvchi</th><th>Push</th><th>Vaqt</th></tr></thead>
+    <tbody>
+    {% for h in history %}<tr><td><b>{{ h.title }}</b></td><td>{{ h.body }}</td><td>{{ h.total }}</td><td>{{ h.pushed or 0 }}</td><td>{{ h.created_at|fmt_dt }}</td></tr>{% endfor %}
+    </tbody></table></div>
+  {% else %}<p class="muted empty">Hali xabar yuborilmagan.</p>{% endif %}
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/admin_notify.js') }}?v={{ asset_v }}"></script>{% endblock %}

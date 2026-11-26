@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Kirish{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+{% block body %}
+<main class="auth-card card fade-in">
+  <div class="brand-mark">{{ icon('calendar') }}</div>
+  <h1>NAVBATCHI</h1>
+  <p class="muted">Navbatchilik jadvalingizni ko'rish uchun shaxsiy kod yoki havola bilan kiring.</p>
+  {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+  <form method="post" class="form" autocomplete="off">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="field">
+      <span>Shaxsiy kod yoki havola</span>
+      <input class="input" type="text" name="code" required placeholder="Administrator bergan havola yoki kod" autofocus>
+    </label>
+    <button class="btn btn-primary btn-block" type="submit">Kirish</button>
+  </form>
+  <p class="hint">Birinchi marta kirayotgan bo'lsangiz, administrator bergan <b>QR-kodni</b> telefon kamerasi bilan skanerlang.</p>
+  <a class="link-small" href="{{ url_for('admin_login') }}">Administrator kirishi →</a>
+  <button class="btn btn-ghost btn-sm theme-corner" type="button" data-theme-toggle title="Rejimni almashtirish">{{ icon('moon') }}</button>
+</main>
+{% endblock %}
