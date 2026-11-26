@@ -114,3 +114,25 @@ def init_db(path):
         conn.commit()
     finally:
         conn.close()
+from werkzeug.security import generate_password_hash
+from config import settings
+
+
+def ensure_default_admin():
+    username = (settings.ADMIN_USERNAME or "admin").strip().lower()
+    password = settings.ADMIN_PASSWORD
+    if len(username) < 3 or not password or len(password) < 8:
+        return
+
+    init_db(settings.DB_PATH)
+    conn = connect(settings.DB_PATH)
+    try:
+        row = conn.execute("SELECT id FROM admins WHERE username = ?", (username,)).fetchone()
+        hashed = generate_password_hash(password)
+        if row:
+            conn.execute("UPDATE admins SET password_hash = ? WHERE id = ?", (hashed, row["id"]))
+        else:
+            conn.execute("INSERT INTO admins(username, password_hash) VALUES (?, ?)", (username, hashed))
+        conn.commit()
+    finally:
+        conn.close()
